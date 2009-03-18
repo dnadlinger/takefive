@@ -7,8 +7,8 @@ package at.klickverbot.takefive.supplementary {
    /**
     * @author David Nadlinger
     */
-   public class Titlescreen extends Sprite {
-      public function Titlescreen() {
+   public class TitleScreen extends Sprite {
+      public function TitleScreen() {
       	addEventListener( Event.ADDED_TO_STAGE, createUi );
       }
       
@@ -21,11 +21,11 @@ package at.klickverbot.takefive.supplementary {
       }
       
       private function handleOnePlayerClick( event :MouseEvent ) :void {
-      	dispatchEvent( new TitlescreenEvent( TitlescreenEvent.ONE_PLAYER ) );
+      	dispatchEvent( new TitleScreenEvent( TitleScreenEvent.ONE_PLAYER ) );
       }
       
       private function handleTwoPlayersClick( event :MouseEvent ) :void {
-         dispatchEvent( new TitlescreenEvent( TitlescreenEvent.TWO_PLAYERS ) );
+         dispatchEvent( new TitleScreenEvent( TitleScreenEvent.TWO_PLAYERS ) );
       }
    }
 }

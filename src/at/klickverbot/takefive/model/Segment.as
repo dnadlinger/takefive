@@ -9,10 +9,14 @@ package at.klickverbot.takefive.model {
       	m_gameModel = model;
          m_segmentIndex = segmentIndex;
       	
-         m_fields = new Array();
-   	   for ( var i :int = 0; i < Constants.FIELDS_PER_SEGMENT; ++i ) {
-   	   	m_fields.push( null );	
-   	   }
+         reset();
+      }
+      
+      public function reset() :void {
+      	// All fields are set to null by creating a new array, so no additional
+      	// actions are needed.
+      	m_fields = new Array();
+      	m_rotation = 0;
       }
       
       public function field( fieldIndex :int ) :PlayerColor {

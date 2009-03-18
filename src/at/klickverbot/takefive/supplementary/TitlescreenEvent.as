@@ -4,8 +4,8 @@ package at.klickverbot.takefive.supplementary {
    /**
     * @author David Nadlinger
     */
-   public class TitlescreenEvent extends Event {
-      public function TitlescreenEvent( type :String ) {
+   public class TitleScreenEvent extends Event {
+      public function TitleScreenEvent( type :String ) {
          super( type, false, false );
       }
       

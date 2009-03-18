@@ -45,23 +45,7 @@ package at.klickverbot.takefive.view {
       	m_rotatingContainer = DisplayObjectContainer( getChildByName( "rotating" ) ); 
       	m_fieldsContainer = DisplayObjectContainer( m_rotatingContainer.getChildByName( "fields" ) );
       	
-      	switch ( m_freeCorner ) {
-            case Corner.TOP_LEFT:
-               // Nothing needs to be done here.
-               break;
-            case Corner.TOP_RIGHT:
-               this.rotation = 90;
-               m_fieldsContainer.rotation = -90;
-               break;
-            case Corner.BOTTOM_LEFT:
-               this.rotation = -90;
-               m_fieldsContainer.rotation = 90;
-               break;
-            case Corner.BOTTOM_RIGHT:
-               this.rotation = 180;
-               m_fieldsContainer.rotation = -180;
-               break;
-      	}
+      	resetRotation();
       	
       	m_fieldDummies = new Array();
       	m_fieldClips = new Array();
@@ -85,6 +69,39 @@ package at.klickverbot.takefive.view {
          m_segmentModel.addEventListener( FieldEvent.CHANGED, handleFieldChange );
          m_segmentModel.addEventListener( SegmentRotatedEvent.ROTATED, handleSegmentRotation );
          m_gameModel.addEventListener( GameStateChangedEvent.CHANGED, handleGameStateChange );
+      }
+      
+      private function reset() :void {
+      	for ( var i :int = 0; i < Constants.FIELDS_PER_SEGMENT; ++i ) {
+            var currentField :DisplayObject = m_fieldClips[ i ];
+            if ( currentField != null ) {
+            	m_fieldsContainer.removeChild( currentField );
+            }
+            m_fieldClips[ i ] = null;
+         }
+         
+         resetRotation();
+      }
+      
+      private function resetRotation() :void {
+      	switch ( m_freeCorner ) {
+            case Corner.TOP_LEFT:
+               this.rotation = 0;
+               m_fieldsContainer.rotation = 0;
+               break;
+            case Corner.TOP_RIGHT:
+               this.rotation = 90;
+               m_fieldsContainer.rotation = -90;
+               break;
+            case Corner.BOTTOM_LEFT:
+               this.rotation = -90;
+               m_fieldsContainer.rotation = 90;
+               break;
+            case Corner.BOTTOM_RIGHT:
+               this.rotation = 180;
+               m_fieldsContainer.rotation = -180;
+               break;
+         }
       }
       
       private function handleFieldClick( event :MouseEvent ) :void {
@@ -126,6 +143,8 @@ package at.klickverbot.takefive.view {
          
          m_fieldsContainer.addChild( stone );
          DummyUtils.fitToDummy( stone, m_fieldDummies[ event.fieldIndex ] );
+         
+         m_fieldClips[ event.fieldIndex ] = stone;
       }
       
       private function handleSegmentRotation( event :SegmentRotatedEvent ) :void {
@@ -143,6 +162,10 @@ package at.klickverbot.takefive.view {
       	} else if ( event.oldState == GameState.ROTATE ) {
       		removeChild( m_arrowCcw );
             removeChild( m_arrowCw );
+      	}
+      	
+      	if ( event.oldState == GameState.GAME_OVER ) {
+      		reset();
       	}
       }
 
