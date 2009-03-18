@@ -2,7 +2,7 @@ package at.klickverbot.takefive.supplementary {
    import flash.display.DisplayObject;
    import flash.display.Sprite;
    import flash.events.Event;
-   import flash.events.MouseEvent;      
+   import flash.events.MouseEvent;   
 
    /**
     * @author David Nadlinger

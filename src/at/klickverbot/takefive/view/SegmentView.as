@@ -16,12 +16,26 @@ package at.klickverbot.takefive.view {
    import flash.events.MouseEvent;      
 
    /**
+    * Displays a segment of the game board and allows the user to place stones
+    * and rotate it. 
+    * 
     * @author David Nadlinger
     */
    public class SegmentView extends Sprite {
-      public function SegmentView( game :GameModel, segment :Segment, freeCorner :Corner ) {
+   	/**
+   	 * Constructs a new SegmentView instance.
+   	 * 
+   	 * @param game The game model to operate on.
+   	 * @param segment The segment model to operate on.
+   	 * @param humanColor The color of the human player. null for two human players.
+   	 * @param freeCorner The corner of the segment which points outwards
+   	 *                   (the animations are played in this direction).
+   	 */
+      public function SegmentView( game :GameModel, segment :Segment,
+         humanColor :PlayerColor, freeCorner :Corner ) {
          m_gameModel = game;
       	m_segmentModel = segment;
+      	m_humanColor = humanColor;
          m_freeCorner = freeCorner;
 
          addEventListener( Event.ADDED_TO_STAGE, createUi );
@@ -74,6 +88,11 @@ package at.klickverbot.takefive.view {
       }
       
       private function handleFieldClick( event :MouseEvent ) :void {
+      	if ( ( m_humanColor && ( m_gameModel.activePlayer != m_humanColor ) ) ||
+            m_gameModel.gameState != GameState.PLACE ) {
+            return;
+         }
+      	
       	var fieldIndex :int;
       	for ( var i :int = 0; i < m_fieldDummies.length; i++ ) {
       		if ( m_fieldDummies[ i ] == event.currentTarget ) {
@@ -129,6 +148,7 @@ package at.klickverbot.takefive.view {
 
       private var m_gameModel :GameModel;
       private var m_segmentModel :Segment;
+      private var m_humanColor :PlayerColor;
       private var m_freeCorner :Corner;
 
       private var m_rotatingContainer :DisplayObjectContainer;

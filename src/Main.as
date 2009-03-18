@@ -1,4 +1,5 @@
 package {
+   import at.klickverbot.takefive.model.PlayerColor;   
    import at.klickverbot.takefive.supplementary.TitlescreenEvent;   
    import at.klickverbot.takefive.supplementary.Titlescreen;   
    import at.klickverbot.takefive.model.GameModel;
@@ -21,14 +22,14 @@ package {
       private function handleOnePlayer( event :Event ) :void {
       	removeChild( m_titlescreen );
       	var model :GameModel = new GameModel();
-         var view :GameView = new GameView( model );
+         var view :GameView = new GameView( model, PlayerColor.WHITE );
          addChild( view );
       }
       
       private function handleTwoPlayers( event :Event ) :void {
       	removeChild( m_titlescreen );
          var model :GameModel = new GameModel();
-         var view :GameView = new GameView( model );
+         var view :GameView = new GameView( model, null );
          addChild( view );
       }
       
