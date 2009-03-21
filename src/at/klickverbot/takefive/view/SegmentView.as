@@ -1,19 +1,19 @@
 package at.klickverbot.takefive.view {
-   import at.klickverbot.takefive.model.Constants;   
-   import at.klickverbot.takefive.model.SegmentRotatedEvent;   
-   import at.klickverbot.takefive.model.GameState;   
-   import at.klickverbot.takefive.model.GameStateChangedEvent;   
+   import at.klickverbot.takefive.model.Board;
+   import at.klickverbot.takefive.model.Constants;
    import at.klickverbot.takefive.model.FieldEvent;
    import at.klickverbot.takefive.model.PlayerColor;
-   import at.klickverbot.takefive.model.GameModel;
    import at.klickverbot.takefive.model.Segment;
+   import at.klickverbot.takefive.model.SegmentRotatedEvent;
+   import at.klickverbot.takefive.model.TurnPhase;
+   import at.klickverbot.takefive.model.TurnPhaseEvent;
    import at.klickverbot.util.DummyUtils;
    
    import flash.display.DisplayObject;
    import flash.display.DisplayObjectContainer;
    import flash.display.Sprite;
    import flash.events.Event;
-   import flash.events.MouseEvent;      
+   import flash.events.MouseEvent;   
 
    /**
     * Displays a segment of the game board and allows the user to place stones
@@ -31,14 +31,26 @@ package at.klickverbot.takefive.view {
    	 * @param freeCorner The corner of the segment which points outwards
    	 *                   (the animations are played in this direction).
    	 */
-      public function SegmentView( game :GameModel, segment :Segment,
+      public function SegmentView( board :Board, segment :Segment,
          humanColor :PlayerColor, freeCorner :Corner ) {
-         m_gameModel = game;
+         m_boardModel = board;
       	m_segmentModel = segment;
       	m_humanColor = humanColor;
          m_freeCorner = freeCorner;
 
          addEventListener( Event.ADDED_TO_STAGE, createUi );
+      }
+      
+      public function reset() :void {
+         for ( var i :int = 0; i < Constants.FIELDS_PER_SEGMENT; ++i ) {
+            var currentField :DisplayObject = m_fieldClips[ i ];
+            if ( currentField != null ) {
+               m_fieldsContainer.removeChild( currentField );
+            }
+            m_fieldClips[ i ] = null;
+         }
+         
+         resetRotation();
       }
       
       private function createUi( event :Event ) :void {
@@ -68,19 +80,7 @@ package at.klickverbot.takefive.view {
 
          m_segmentModel.addEventListener( FieldEvent.CHANGED, handleFieldChange );
          m_segmentModel.addEventListener( SegmentRotatedEvent.ROTATED, handleSegmentRotation );
-         m_gameModel.addEventListener( GameStateChangedEvent.CHANGED, handleGameStateChange );
-      }
-      
-      private function reset() :void {
-      	for ( var i :int = 0; i < Constants.FIELDS_PER_SEGMENT; ++i ) {
-            var currentField :DisplayObject = m_fieldClips[ i ];
-            if ( currentField != null ) {
-            	m_fieldsContainer.removeChild( currentField );
-            }
-            m_fieldClips[ i ] = null;
-         }
-         
-         resetRotation();
+         m_boardModel.addEventListener( TurnPhaseEvent.CHANGED, handleGameStateChange );
       }
       
       private function resetRotation() :void {
@@ -105,8 +105,8 @@ package at.klickverbot.takefive.view {
       }
       
       private function handleFieldClick( event :MouseEvent ) :void {
-      	if ( ( m_humanColor && ( m_gameModel.activePlayer != m_humanColor ) ) ||
-            m_gameModel.gameState != GameState.PLACE ) {
+      	if ( ( m_humanColor && ( m_boardModel.activePlayer != m_humanColor ) ) ||
+            m_boardModel.currentPhase != TurnPhase.PLACE ) {
             return;
          }
       	
@@ -118,7 +118,7 @@ package at.klickverbot.takefive.view {
             }
       	}
       	
-       	m_segmentModel.placeStone( fieldIndex, m_gameModel.activePlayer );
+       	m_segmentModel.placeStone( fieldIndex, m_boardModel.activePlayer );
       }
       
       private function handleArrowCcwClick( event :MouseEvent ) :void {
@@ -151,25 +151,21 @@ package at.klickverbot.takefive.view {
       	m_rotatingContainer.rotation += event.angle * 90;
       }
 
-      private function handleGameStateChange( event :GameStateChangedEvent ) :void {
+      private function handleGameStateChange( event :TurnPhaseEvent ) :void {
       	// Show/hide rotation arrows.
-      	if ( event.newState == GameState.ROTATE ) {
+      	if ( event.newPhase == TurnPhase.ROTATE ) {
       		addChild( m_arrowCcw );
             DummyUtils.fitToDummy( m_arrowCcw, getChildByName( "arrowCcw" ) );
             
             addChild( m_arrowCw );
             DummyUtils.fitToDummy( m_arrowCw, getChildByName( "arrowCw" ) );
-      	} else if ( event.oldState == GameState.ROTATE ) {
+      	} else if ( event.oldPhase == TurnPhase.ROTATE ) {
       		removeChild( m_arrowCcw );
             removeChild( m_arrowCw );
       	}
-      	
-      	if ( event.oldState == GameState.GAME_OVER ) {
-      		reset();
-      	}
       }
 
-      private var m_gameModel :GameModel;
+      private var m_boardModel :Board;
       private var m_segmentModel :Segment;
       private var m_humanColor :PlayerColor;
       private var m_freeCorner :Corner;

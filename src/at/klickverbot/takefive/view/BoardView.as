@@ -1,12 +1,10 @@
 package at.klickverbot.takefive.view {
-   import at.klickverbot.takefive.model.PlayerColor;   
-   
-   import flash.display.DisplayObjectContainer;   
-   
-   import at.klickverbot.takefive.model.GameModel;
+   import at.klickverbot.takefive.model.Board;
+   import at.klickverbot.takefive.model.PlayerColor;
    import at.klickverbot.takefive.view.SegmentView;
    import at.klickverbot.util.DummyUtils;
    
+   import flash.display.DisplayObjectContainer;
    import flash.display.Sprite;
    import flash.events.Event;      
 
@@ -22,15 +20,19 @@ package at.klickverbot.takefive.view {
        * @param model The game model to operate on.
        * @param humanColor The color of the human player. null for two human players.  
        */
-      public function BoardView( model :GameModel, humanColor :PlayerColor ) {
-         m_gameModel = model;
+      public function BoardView( model :Board, humanColor :PlayerColor ) {
+         m_model = model;
       	addEventListener( Event.ADDED_TO_STAGE, createUi );
       	
       	m_segmentViews = new Array();
-         m_segmentViews.push( new SegmentView( model, m_gameModel.segments[ 0 ], humanColor, Corner.TOP_LEFT ) );
-         m_segmentViews.push( new SegmentView( model, m_gameModel.segments[ 1 ], humanColor, Corner.TOP_RIGHT ) );
-         m_segmentViews.push( new SegmentView( model, m_gameModel.segments[ 2 ], humanColor, Corner.BOTTOM_LEFT ) );
-         m_segmentViews.push( new SegmentView( model, m_gameModel.segments[ 3 ], humanColor, Corner.BOTTOM_RIGHT ) );
+         m_segmentViews.push( new SegmentView( model, m_model.segments[ 0 ], humanColor, Corner.TOP_LEFT ) );
+         m_segmentViews.push( new SegmentView( model, m_model.segments[ 1 ], humanColor, Corner.TOP_RIGHT ) );
+         m_segmentViews.push( new SegmentView( model, m_model.segments[ 2 ], humanColor, Corner.BOTTOM_LEFT ) );
+         m_segmentViews.push( new SegmentView( model, m_model.segments[ 3 ], humanColor, Corner.BOTTOM_RIGHT ) );
+      }
+      
+      public function reset() :void {
+         m_segmentViews.forEach( function( v :SegmentView, ...a ) :void { v.reset(); } );
       }
       
       private function createUi( event :Event ) :void {
@@ -43,7 +45,7 @@ package at.klickverbot.takefive.view {
          }
       }
       
-      private var m_gameModel :GameModel;
+      private var m_model :Board;
       private var m_segmentViews :Array;
    }
 }

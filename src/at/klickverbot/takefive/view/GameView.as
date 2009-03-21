@@ -1,10 +1,9 @@
 package at.klickverbot.takefive.view {
-   import at.klickverbot.takefive.supplementary.GameOverScreenEvent;   
-   import at.klickverbot.takefive.supplementary.GameOverScreen;   
-   import at.klickverbot.takefive.model.GameState;   
-   import at.klickverbot.takefive.model.GameStateChangedEvent;   
    import at.klickverbot.takefive.model.GameModel;
+   import at.klickverbot.takefive.model.GameOverEvent;
    import at.klickverbot.takefive.model.PlayerColor;
+   import at.klickverbot.takefive.supplementary.GameOverScreen;
+   import at.klickverbot.takefive.supplementary.GameOverScreenEvent;
    import at.klickverbot.util.DummyUtils;
    
    import flash.display.DisplayObjectContainer;
@@ -31,29 +30,29 @@ package at.klickverbot.takefive.view {
       }
       
       private function createUi( event :Event ) :void {
-      	m_boardView = new BoardView( m_gameModel, m_humanColor );
+      	m_boardView = new BoardView( m_gameModel.board, m_humanColor );
       	addChild( m_boardView );
          DummyUtils.fitToDummy( m_boardView, getChildByName( "board" ) );
-         m_gameModel.addEventListener( GameStateChangedEvent.CHANGED, handleGameStateChange );
+         
+         m_gameModel.addEventListener( GameOverEvent.GAME_OVER, handleGameOver );
       }
       
       
-      private function handleGameStateChange( event :GameStateChangedEvent ) :void {
-      	if ( event.newState == GameState.GAME_OVER ) {
-            m_gameOverScreen = new GameOverScreen( m_gameModel.lastWinner );
-            m_gameOverScreen.addEventListener( GameOverScreenEvent.AGAIN, handleGameOverAgain );
-            m_gameOverScreen.addEventListener( GameOverScreenEvent.MENU, handleGameOverMenu );
-            addChild( m_gameOverScreen );
-         } else if ( event.oldState == GameState.GAME_OVER ) {
-         	removeChild( m_gameOverScreen );
-         }
+      private function handleGameOver( event :GameOverEvent ) :void {
+         m_gameOverScreen = new GameOverScreen( m_gameModel.lastWinner );
+         m_gameOverScreen.addEventListener( GameOverScreenEvent.AGAIN, handleGameOverAgain );
+         m_gameOverScreen.addEventListener( GameOverScreenEvent.MENU, handleGameOverMenu );
+         addChild( m_gameOverScreen );
       }
       
       private function handleGameOverAgain( event :GameOverScreenEvent ) :void {
-         m_gameModel.resetBoard();
+      	removeChild( m_gameOverScreen );
+         m_gameModel.nextRound();
+         m_boardView.reset();
       }
       
       private function handleGameOverMenu( event :GameOverScreenEvent ) :void {
+      	removeChild( m_gameOverScreen );
       	dispatchEvent( new Event( Event.COMPLETE ) );
       }
 

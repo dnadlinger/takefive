@@ -1,12 +1,12 @@
 package at.klickverbot.takefive.model {
-   import flash.events.EventDispatcher;      
+   import flash.events.EventDispatcher;         
 
    /**
     * @author David Nadlinger
     */
    public class Segment extends EventDispatcher {
-      public function Segment( model :GameModel, segmentIndex :int ) {
-      	m_gameModel = model;
+      public function Segment( model :Board, segmentIndex :int ) {
+      	m_board = model;
          m_segmentIndex = segmentIndex;
       	
          reset();
@@ -24,11 +24,11 @@ package at.klickverbot.takefive.model {
       }
 
       public function placeStone( fieldIndex :int, color :PlayerColor ) :Boolean {
-      	if ( m_gameModel.gameState != GameState.PLACE ) {
+      	if ( m_board.currentPhase != TurnPhase.PLACE ) {
             return false;
       	}
       	
-      	if ( m_gameModel.activePlayer != color ) {
+      	if ( m_board.activePlayer != color ) {
             return false;
          }
          
@@ -67,7 +67,7 @@ package at.klickverbot.takefive.model {
    	
    	private var m_fields :Array;
    	private var m_rotation :int;
-   	private var m_gameModel :GameModel;
+   	private var m_board :Board;
    	private var m_segmentIndex :int;
    }
 }
