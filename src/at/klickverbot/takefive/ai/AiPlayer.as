@@ -46,7 +46,7 @@ package at.klickverbot.takefive.ai {
       	var turnScores :Array = new Array();
       	var bestScore :int = int.MIN_VALUE;
          for ( var i :int = 0; i < turns.length; i++ ) {
-      		var currentScore :int = -alphaBeta( turns[ i ].applyTurn( fields, m_color ),
+      		var currentScore :int = min( turns[ i ].applyTurn( fields, m_color ),
                m_strength, int.MIN_VALUE, int.MAX_VALUE );
       		turnScores.push( currentScore );
       		if ( currentScore > bestScore ) {
@@ -105,44 +105,50 @@ package at.klickverbot.takefive.ai {
       	return result;
       }
       
-      private function alphaBeta( fields :Array, remainingLevels: int, alpha :int, beta :int ) :int {
-      	if ( remainingLevels == 0 ) {
-      		return evaluateBoard( fields );
-      	}
-      	
+      private function max( fields :Array, remainingLevels: int, alpha :int, beta :int ) :int {
+       	if ( remainingLevels == 0 ) {
+       		return evaluateBoard( fields );
+       	}
          var turns :Array = getPossibleTurns( fields );
-         // Stop recursion if there are no more possible turns.
-         if ( turns.length == 0 ){
-         	return evaluateBoard( fields );
+         if ( turns.length == 0 ) {
+            return evaluateBoard( fields );
          }
          
-         // "Cheating" to get the active player.
-         // In even levels (zero based), it is the opponent's turn (because we
-         // already have made one turn when the alpha-beta search is started in
-         // getBestTurn()), in uneven levels, it is our turn.
-         // We are always the active player...
-         var activePlayer :PlayerColor =
-            ( ( m_strength - remainingLevels ) % 2 ) ? m_board.activePlayer : m_board.inactivePlayer;
-         
-         var best :int = int.MIN_VALUE;
          for ( var i :int = 0; i < turns.length; i++ ) {
-         	if ( best > alpha ) {
-         		alpha = best;
-         	}
-         	
-         	var score :int = -alphaBeta( turns[ i ].applyTurn( fields, activePlayer ),
-         	  remainingLevels-1, -beta, -alpha );
-         	
-         	if ( score > best ) {
-         		best = score;
-         	}
-         	if ( score >= beta ) {
-               break;
+         	var score :int = min( turns[ i ].applyTurn( fields, m_color ),
+              remainingLevels-1, alpha, beta );
+            if ( score >= beta ) {
+            	return beta;
+            } else if ( score > alpha ) {
+            	alpha = score;
             }
          }
-         return best;
-      }      
-      
+         
+         return alpha;
+     }
+     
+     private function min( fields :Array, remainingLevels: int, alpha :int, beta :int ) :int {
+         if ( remainingLevels == 0 ) {
+            return evaluateBoard( fields );
+         }
+         var turns :Array = getPossibleTurns( fields );
+         if ( turns.length == 0 ) {
+            return evaluateBoard( fields );
+         }
+         
+         for ( var i :int = 0; i < turns.length; i++ ) {
+            var score :int = max( turns[ i ].applyTurn( fields, m_board.inactivePlayer ),
+              remainingLevels-1, alpha, beta );
+            if ( score <= alpha ) {
+               return alpha;
+            } else if ( score < beta ) {
+               beta = score;
+            }
+         }
+         
+         return beta;
+      }
+
       private function evaluateBoard( fields :Array ) :int {
       	var totalScore :int = 0;
          
