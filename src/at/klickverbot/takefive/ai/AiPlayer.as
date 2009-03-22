@@ -18,6 +18,7 @@ package at.klickverbot.takefive.ai {
    	public function AiPlayer( board :Board, color :PlayerColor, strength :int ) {
          m_board = board;
          m_color = color;
+         m_opponentColor = PlayerColor.other( color );
          m_strength = strength;
          board.addEventListener( TurnPhaseEvent.CHANGED, handleTurnPhaseChange );
       }
@@ -137,7 +138,7 @@ package at.klickverbot.takefive.ai {
          }
          
          for ( var i :int = 0; i < turns.length; i++ ) {
-            var score :int = max( turns[ i ].applyTurn( fields, m_board.inactivePlayer ),
+            var score :int = max( turns[ i ].applyTurn( fields, m_opponentColor ),
               remainingLevels-1, alpha, beta );
             if ( score <= alpha ) {
                return alpha;
@@ -165,36 +166,42 @@ package at.klickverbot.takefive.ai {
          }
          
          // The segment centers are important positions.
-         totalScore += scoreField( fields, 1, 1, 50 );
-         totalScore += scoreField( fields, 4, 1, 50 );
-         totalScore += scoreField( fields, 1, 4, 50 );
-         totalScore += scoreField( fields, 4, 4, 50 );
+         const CENTER_SCORE :int = 50;
+         if ( fields[ 1 ][ 1 ] == m_color ) {
+         	totalScore += CENTER_SCORE;
+         } else if ( fields[ 1 ][ 1 ] == m_opponentColor ) {
+         	totalScore -= CENTER_SCORE;
+         }
+         if ( fields[ 1 ][ 4 ] == m_color ) {
+            totalScore += CENTER_SCORE;
+         } else if ( fields[ 1 ][ 4 ] == m_opponentColor ) {
+            totalScore -= CENTER_SCORE;
+         }
+         if ( fields[ 4 ][ 1 ] == m_color ) {
+            totalScore += CENTER_SCORE;
+         } else if ( fields[ 4 ][ 1 ] == m_opponentColor ) {
+            totalScore -= CENTER_SCORE;
+         }
+         if ( fields[ 4 ][ 4 ] == m_color ) {
+            totalScore += CENTER_SCORE;
+         } else if ( fields[ 4 ][ 4 ] == m_opponentColor ) {
+            totalScore -= CENTER_SCORE;
+         }
          
          return totalScore;
       }
-      
-      private function scoreField( fields :Array, x :int, y :int, score :int ) :int {
-      	if ( fields[ x ][ y ] != null ) {
-            if ( fields[ x ][ y ] == m_color ) {
-               return score;
-            } else {
-            	return -score;
-            }
-         } else {
-         	return 0;
-         }
-      }
-      
+
       private function isSegmentAsymmetric( fields :Array, segmentX :int, segmentY :int ) :Boolean {
-      	var x :int = segmentX * Constants.SEGMENT_SIDE_FIELDS;
-      	var y :int = segmentY * Constants.SEGMENT_SIDE_FIELDS;
-      	return ( fields[ x ][ y ] != null ) || ( fields[ x + 1 ][ y ] != null ) || ( fields[ x + 2 ][ y ] != null ) ||
-      	  ( fields[ x ][ y + 1 ] != null ) || ( fields[ x + 2 ][ y + 1 ] != null ) ||
-      	  ( fields[ x ][ y + 2 ] != null ) || ( fields[ x + 1 ][ y + 2 ] != null ) || ( fields[ x + 2 ][ y + 2 ] != null );
+         var x :int = segmentX * Constants.SEGMENT_SIDE_FIELDS;
+         var y :int = segmentY * Constants.SEGMENT_SIDE_FIELDS;
+         return ( fields[ x ][ y ] != null ) || ( fields[ x + 1 ][ y ] != null ) || ( fields[ x + 2 ][ y ] != null ) ||
+            ( fields[ x ][ y + 1 ] != null ) || ( fields[ x + 2 ][ y + 1 ] != null ) ||
+            ( fields[ x ][ y + 2 ] != null ) || ( fields[ x + 1 ][ y + 2 ] != null ) || ( fields[ x + 2 ][ y + 2 ] != null );
       }
 
       private var m_board :Board;
-   	private var m_color :PlayerColor;
-   	private var m_strength :int;
+      private var m_color :PlayerColor;
+      private var m_opponentColor :PlayerColor;
+      private var m_strength :int;
    }
 }
