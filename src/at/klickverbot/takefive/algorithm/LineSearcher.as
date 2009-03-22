@@ -1,5 +1,4 @@
 package at.klickverbot.takefive.algorithm {
-   import at.klickverbot.takefive.model.Board;
    import at.klickverbot.takefive.model.Constants;
    import at.klickverbot.takefive.model.GlobalCoords;
    import at.klickverbot.takefive.model.PlayerColor;   
@@ -8,7 +7,7 @@ package at.klickverbot.takefive.algorithm {
     * @author David Nadlinger
     */
    public class LineSearcher {
-   	public static function findLines( board :Board, minLength :int = 2 ) :Array {
+   	public static function findLines( fields :Array, minLength :int = 2 ) :Array {
    		if ( minLength < 2 ) {
    			throw new ArgumentError( "A line must be at least two fields long." );
    		}
@@ -18,8 +17,6 @@ package at.klickverbot.takefive.algorithm {
    		}
    		
    		var lines :Array = new Array();
-   		
-   		var fields :Array = board.getFieldsArray();
    		
    		// Search for vertical lines.
    		var direction :GlobalCoords = Directions.DOWN;
@@ -70,7 +67,7 @@ package at.klickverbot.takefive.algorithm {
       	var lastColor :PlayerColor = null;
       	var lineLength :int = 0;
       	while ( ( 0 <= currentPos.x ) && ( currentPos.x < Constants.BOARD_SIZE ) &&
-            ( 0 <= currentPos.y ) &&( currentPos.y < Constants.BOARD_SIZE ) ) {
+            ( 0 <= currentPos.y ) && ( currentPos.y < Constants.BOARD_SIZE ) ) {
             
             var currentColor :PlayerColor = fields[ currentPos.x ][ currentPos.y ];
          	if ( currentColor != lastColor ) {

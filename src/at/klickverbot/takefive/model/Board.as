@@ -79,32 +79,35 @@ package at.klickverbot.takefive.model {
          var segmentX :int = coords.segment % Constants.BOARD_SIDE_SEGMENTS;
          var segmentY :int = coords.segment / Constants.BOARD_SIDE_SEGMENTS;
          
-         var x :int = segmentX * Constants.BOARD_SIDE_SEGMENTS;
-         var y :int = segmentY * Constants.BOARD_SIDE_SEGMENTS;
+         var oldFieldX :int = coords.field % Constants.SEGMENT_SIDE_FIELDS;
+         var oldFieldY :int = coords.field / Constants.SEGMENT_SIDE_FIELDS;
+         
+         var newX :int = segmentX * Constants.BOARD_SIDE_SEGMENTS;
+         var newY :int = segmentY * Constants.BOARD_SIDE_SEGMENTS;
          
          switch ( m_segments[ coords.segment ].rotation ) {
             case 0:
-               x += coords.field % Constants.SEGMENT_SIDE_FIELDS;
-               y += coords.field / Constants.SEGMENT_SIDE_FIELDS;
+               newX += oldFieldX;
+               newY += oldFieldY;
                break;
             case 1:
-               x += 2 - ( coords.field / Constants.SEGMENT_SIDE_FIELDS );
-               y += coords.field % Constants.SEGMENT_SIDE_FIELDS;
+               newX += 2 - oldFieldY;
+               newY += oldFieldX;
                break;
             case 2:
-               x += 2 - ( coords.field % Constants.SEGMENT_SIDE_FIELDS );
-               y += 2 - ( coords.field / Constants.SEGMENT_SIDE_FIELDS );
+               newX += 2 - oldFieldX;
+               newY += 2 - oldFieldY;
                break;
             case 3:
-               x += coords.field / Constants.SEGMENT_SIDE_FIELDS;
-               y += 2 - ( coords.field % Constants.SEGMENT_SIDE_FIELDS );
+               newX += oldFieldY;
+               newY += 2 - oldFieldX;
                break;
             default:
                throw new Error( "Invalid segment rotation: " + m_segments[ coords.segment ].rotation );
                break;
          }
          
-         return new GlobalCoords( x, y );
+         return new GlobalCoords( newX, newY );
       }
    	
    	public function get segments() :Array {
@@ -136,7 +139,7 @@ package at.klickverbot.takefive.model {
          // We have to check also the non-active player because the active player
          // could deliberately loose...
       
-         var lines :Array = LineSearcher.findLines( this, Constants.WIN_LENGTH ); 
+         var lines :Array = LineSearcher.findLines( getFieldsArray(), Constants.WIN_LENGTH ); 
          if ( lines.some( function( l :Line, ...a ) :Boolean { return l.color == m_activePlayer; } ) ) {
             dispatchEvent( new GameOverEvent( m_activePlayer ) );
             return;

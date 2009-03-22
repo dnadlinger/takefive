@@ -46,16 +46,21 @@ package at.klickverbot.takefive.model {
          return m_rotation;
       }
       
-      public function rotateCcw() :void {
-      	rotate( -1 );
+      public function rotateCcw() :Boolean {
+      	return rotate( -1 );
       }
       
-      public function rotateCw() :void {
-         rotate( 1 );
+      public function rotateCw() :Boolean {
+         return rotate( 1 );
       }
 
-      private function rotate( angle :int ) :void {
-      	m_rotation = ( m_rotation + angle ) % 4;
+      public function rotate( angle :int ) :Boolean {
+      	if ( m_board.currentPhase != TurnPhase.ROTATE ) {
+      		trace( "illegal rotation" );
+            return false;
+         }
+         
+      	m_rotation = m_rotation + ( angle % 4 );
       	if ( m_rotation < 0 ) {
       		m_rotation += 4;
       	} else if ( m_rotation >= 4 ) {
@@ -63,6 +68,7 @@ package at.klickverbot.takefive.model {
       	}
       	
          dispatchEvent( new SegmentRotatedEvent( angle ) );
+         return true;
       }
    	
    	private var m_fields :Array;

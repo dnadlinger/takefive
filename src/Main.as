@@ -1,4 +1,5 @@
 package {
+   import at.klickverbot.takefive.ai.AiPlayer;   
    import at.klickverbot.takefive.model.PlayerColor;   
    import at.klickverbot.takefive.supplementary.TitleScreenEvent;   
    import at.klickverbot.takefive.supplementary.TitleScreen;   
@@ -21,7 +22,10 @@ package {
       
       private function handleOnePlayer( event :Event ) :void {
       	removeChild( m_titlescreen );
+      	
       	var model :GameModel = new GameModel();
+      	var opponent :AiPlayer = new AiPlayer( model.board, PlayerColor.BLACK, 1 );
+      	
          m_gameView = new GameView( model, PlayerColor.WHITE );
          m_gameView.addEventListener( Event.COMPLETE, handleGameComplete );
          addChild( m_gameView );
@@ -29,7 +33,9 @@ package {
       
       private function handleTwoPlayers( event :Event ) :void {
       	removeChild( m_titlescreen );
+      	
          var model :GameModel = new GameModel();
+         
          m_gameView = new GameView( model, null );
          m_gameView.addEventListener( Event.COMPLETE, handleGameComplete );
          addChild( m_gameView );

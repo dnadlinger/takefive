@@ -76,11 +76,13 @@ package at.klickverbot.takefive.view {
          m_arrowCw = new ArrowCw();
          m_arrowCw.addEventListener( MouseEvent.CLICK, handleArrowCwClick );
          
+         m_arrowsVisible = false;
+         
          // TODO: Synchronize with model state.
 
          m_segmentModel.addEventListener( FieldEvent.CHANGED, handleFieldChange );
          m_segmentModel.addEventListener( SegmentRotatedEvent.ROTATED, handleSegmentRotation );
-         m_boardModel.addEventListener( TurnPhaseEvent.CHANGED, handleGameStateChange );
+         m_boardModel.addEventListener( TurnPhaseEvent.CHANGED, handleTurnPhaseChange );
       }
       
       private function resetRotation() :void {
@@ -151,18 +153,25 @@ package at.klickverbot.takefive.view {
       	m_rotatingContainer.rotation += event.angle * 90;
       }
 
-      private function handleGameStateChange( event :TurnPhaseEvent ) :void {
+      private function handleTurnPhaseChange( event :TurnPhaseEvent ) :void {      	
       	// Show/hide rotation arrows.
-      	if ( event.newPhase == TurnPhase.ROTATE ) {
+      	if ( ( event.newPhase == TurnPhase.ROTATE ) && humanPlayerActive() ) {
       		addChild( m_arrowCcw );
             DummyUtils.fitToDummy( m_arrowCcw, getChildByName( "arrowCcw" ) );
             
             addChild( m_arrowCw );
             DummyUtils.fitToDummy( m_arrowCw, getChildByName( "arrowCw" ) );
-      	} else if ( event.oldPhase == TurnPhase.ROTATE ) {
+            
+            m_arrowsVisible = true;
+         } else if ( ( event.oldPhase == TurnPhase.ROTATE ) && m_arrowsVisible ) {
       		removeChild( m_arrowCcw );
             removeChild( m_arrowCw );
+            m_arrowsVisible = false;
       	}
+      }
+      
+      private function humanPlayerActive() :Boolean {
+      	return ( m_humanColor == null ) || ( m_boardModel.activePlayer == m_humanColor );
       }
 
       private var m_boardModel :Board;
@@ -177,5 +186,6 @@ package at.klickverbot.takefive.view {
       
       private var m_arrowCw :DisplayObject;
       private var m_arrowCcw :DisplayObject;
+      private var m_arrowsVisible :Boolean;
    }
 }
