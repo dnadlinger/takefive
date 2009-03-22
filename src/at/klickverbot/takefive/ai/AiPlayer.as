@@ -1,13 +1,15 @@
 package at.klickverbot.takefive.ai {
-   import at.klickverbot.takefive.algorithm.Line;   
-   import at.klickverbot.takefive.algorithm.LineSearcher;   
-   import at.klickverbot.takefive.model.GlobalCoords;   
-   import at.klickverbot.takefive.model.Constants;   
+   import at.klickverbot.takefive.algorithm.Line;
+   import at.klickverbot.takefive.algorithm.LineSearcher;
    import at.klickverbot.takefive.model.Board;
+   import at.klickverbot.takefive.model.Constants;
+   import at.klickverbot.takefive.model.GlobalCoords;
    import at.klickverbot.takefive.model.PlayerColor;
    import at.klickverbot.takefive.model.SegmentCoords;
    import at.klickverbot.takefive.model.TurnPhase;
-   import at.klickverbot.takefive.model.TurnPhaseEvent;   
+   import at.klickverbot.takefive.model.TurnPhaseEvent;
+   
+   import flash.utils.getTimer;      
 
    /**
     * @author David Nadlinger
@@ -36,6 +38,8 @@ package at.klickverbot.takefive.ai {
       }
       
       private function getBestTurn() :Turn {
+      	var startTicks :int = getTimer();
+      	
       	var fields :Array = m_board.getFieldsArray();
       	var turns :Array = getPossibleTurns( fields );
       	
@@ -52,7 +56,9 @@ package at.klickverbot.takefive.ai {
       	
          for ( var turnIndex :int = 0; turnIndex < turnScores.length; turnIndex++ ) {
             if ( turnScores[ turnIndex ] == bestScore ) {
-            	return turns[ turnIndex ]; 
+            	trace( "Evaluated " + turns.length + " turns in " + ( getTimer() - startTicks ) +
+                  " milliseconds to get best move with score " + bestScore + "." );
+               return turns[ turnIndex ]; 
             }
          }
          
